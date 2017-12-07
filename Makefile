@@ -22,17 +22,7 @@ xcode:
 # Projects
 ##
 
-# background worker not communicating at all
-
-ASYNC_SEND = $(BIN_DIR)/async_send
-ASYNC_SEND_SRCS=$(TST_DIR)/async_send.cc
-ASYNC_SEND_OBJS=$(ASYNC_SEND_SRCS:.cc=.o)
-
-$(ASYNC_SEND): $(UV_LIB) $(OBJS) $(ASYNC_SEND_OBJS)
-	@mkdir -p $(BIN_DIR)
-	$(CXX) $(LIBS) $(OBJS) $(ASYNC_SEND_OBJS) $(UV_LIB) -o $@
-
-async_send: $(ASYNC_SEND)
+# async_queueu: queeing background work
 
 ASYNC_QUEUE = $(BIN_DIR)/async_queue
 ASYNC_QUEUE_SRCS=$(TST_DIR)/async_queue.cc

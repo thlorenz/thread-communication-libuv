@@ -29,12 +29,6 @@ source_group(uv FILES ${uv_sources} ${uv_unix_sources} ${uv_headers})
 source_group(src FILES ${thread_communication_sources} ${thread_communication_headers})
 source_group(test FILES ${thread_communication_test_sources} ${thread_communication_test_headers})
 
-add_executable(async_send
-  ${thread_communication_sources} ${thread_communication_headers}
-  ${PROJECT_TEST_DIR}/async_send.cc ${thread_communication_test_headers}
-  ${uv_sources} ${uv_unix_sources} ${uv_headers}
-)
-
 add_executable(async_queue
   ${thread_communication_sources} ${thread_communication_headers}
   ${PROJECT_TEST_DIR}/async_queue.cc ${thread_communication_test_headers}

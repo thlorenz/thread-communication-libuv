@@ -40,6 +40,6 @@ async_queue: $(ASYNC_QUEUE)
 
 clean:
 	@rm -f $(OBJS) \
-		$(ASYNC_SEND) $(ASYNC_SEND_OBJS)
+		$(ASYNC_QUEUE) $(ASYNC_QUEUE_OBJS)
 
-.PHONY: async_send xcode
+.PHONY: async_queue xcode

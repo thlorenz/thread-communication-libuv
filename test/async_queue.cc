@@ -10,12 +10,17 @@ typedef struct {
 static void work_cb(uv_work_t* req) {
   work_t* work = static_cast<work_t*>(req->data);
   work->cb_count++;
+  
+  log("Starting queued background work");
+  uv_sleep(200);
+  log("Finishing queued background work");
 }
 
 static void after_work_cb(uv_work_t* req, int status) {
   work_t* work = static_cast<work_t*>(req->data);
   ASSERT(status == 0);
   work->after_cb_count++;
+  log("Finished queued background work");
 }
 
 int main(int argc, char *argv[]) {
@@ -25,9 +30,11 @@ int main(int argc, char *argv[]) {
   work_t work;
   work.req.data = &work;
 
+  log("Queueing background work");
   r = uv_queue_work(loop, &work.req, work_cb, after_work_cb);
   ASSERT(r == 0);
 
+  log("Starting loop");
   uv_run(loop, UV_RUN_DEFAULT);
 
   ASSERT(work.cb_count == 1);

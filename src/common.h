@@ -18,8 +18,6 @@
   }                                                       \
  } while (0)
 
-#endif
-
 void inline uv_sleep(int msec) {
   int sec;
   int usec;
@@ -48,3 +46,5 @@ void inline uv_sleep(int msec) {
             (unsigned long int) uv_thread_self(), \
             msg);                                 \
   } while (0)
+
+#endif 

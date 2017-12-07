@@ -22,7 +22,7 @@ xcode:
 # Projects
 ##
 
-# async_queueu: queeing background work
+# async_queue: queeing background work
 
 ASYNC_QUEUE = $(BIN_DIR)/async_queue
 ASYNC_QUEUE_SRCS=$(TST_DIR)/async_queue.cc
@@ -34,12 +34,24 @@ $(ASYNC_QUEUE): $(UV_LIB) $(OBJS) $(ASYNC_QUEUE_OBJS)
 
 async_queue: $(ASYNC_QUEUE)
 
+# async_worker: worker API using queueing under the hood
+
+ASYNC_WORKER = $(BIN_DIR)/async_worker
+ASYNC_WORKER_SRCS=$(TST_DIR)/async_worker.cc
+ASYNC_WORKER_OBJS=$(ASYNC_WORKER_SRCS:.cc=.o)
+
+$(ASYNC_WORKER): $(UV_LIB) $(OBJS) $(ASYNC_WORKER_OBJS)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(LIBS) $(ASYNC_WORKER_OBJS) $(OBJS) $(UV_LIB) -o $@
+
+async_worker: $(ASYNC_WORKER)
 .SUFFIXES: .cc .o
 .cc.o:
 	$(CXX) $< $(CCFLAGS) $(INCS) -c -o $@
 
 clean:
-	@rm -f $(OBJS) \
-		$(ASYNC_QUEUE) $(ASYNC_QUEUE_OBJS)
+	@rm -f $(OBJS)                         \
+		$(ASYNC_QUEUE) $(ASYNC_QUEUE_OBJS) \
+		$(ASYNC_WORKER) $(ASYNC_WORKER_OBJS)
 
 .PHONY: async_queue xcode

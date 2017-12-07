@@ -34,3 +34,9 @@ add_executable(async_queue
   ${PROJECT_TEST_DIR}/async_queue.cc ${thread_communication_test_headers}
   ${uv_sources} ${uv_unix_sources} ${uv_headers}
 )
+
+add_executable(async_worker
+  ${thread_communication_sources} ${thread_communication_headers}
+  ${PROJECT_TEST_DIR}/async_worker.cc ${thread_communication_test_headers}
+  ${uv_sources} ${uv_unix_sources} ${uv_headers}
+)

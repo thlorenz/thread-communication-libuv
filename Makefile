@@ -34,6 +34,16 @@ $(ASYNC_SEND): $(UV_LIB) $(OBJS) $(ASYNC_SEND_OBJS)
 
 async_send: $(ASYNC_SEND)
 
+ASYNC_QUEUE = $(BIN_DIR)/async_queue
+ASYNC_QUEUE_SRCS=$(TST_DIR)/async_queue.cc
+ASYNC_QUEUE_OBJS=$(ASYNC_QUEUE_SRCS:.cc=.o)
+
+$(ASYNC_QUEUE): $(UV_LIB) $(OBJS) $(ASYNC_QUEUE_OBJS)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(LIBS) $(OBJS) $(ASYNC_QUEUE_OBJS) $(UV_LIB) -o $@
+
+async_queue: $(ASYNC_QUEUE)
+
 .SUFFIXES: .cc .o
 .cc.o:
 	$(CXX) $< $(CCFLAGS) $(INCS) -c -o $@

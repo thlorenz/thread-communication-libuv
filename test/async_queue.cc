@@ -10,9 +10,9 @@ typedef struct {
 static void work_cb(uv_work_t* req) {
   work_t* work = static_cast<work_t*>(req->data);
   work->cb_count++;
-  
+
   log("Starting queued background work");
-  uv_sleep(200);
+  uv_sleep(1000);
   log("Finishing queued background work");
 }
 

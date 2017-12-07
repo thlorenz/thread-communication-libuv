@@ -32,7 +32,19 @@ void inline uv_sleep(int msec) {
     usleep(usec);
 }
 
-#define log(msg)                                                                                            \
-  do {                                                                                                      \
-    fprintf(stderr, "(%s:%d)[0x%lx] %s\n", __FILE__, __LINE__, (unsigned long int) uv_thread_self(), msg); \
-} while (0)
+#define __FILENAME__ (__builtin_strrchr(__FILE__, '/') \
+    ? __builtin_strrchr(__FILE__, '/') + 1 \
+    : __FILE__)
+
+#define log(msg)                                  \
+  do {                                            \
+    double uptime;                                \
+    uv_uptime(&uptime);                           \
+    fprintf(stderr,                               \
+            "[%f](%s:%d)[0x%lx] %s\n",            \
+            uptime,                               \
+            __FILENAME__,                         \
+            __LINE__,                             \
+            (unsigned long int) uv_thread_self(), \
+            msg);                                 \
+  } while (0)

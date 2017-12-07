@@ -1,35 +1,37 @@
 #include "common.h"
 #include <uv.h>
 
-static int work_cb_count;
-static int after_work_cb_count;
-static uv_work_t work_req;
-static char data;
+typedef struct {
+  int cb_count = 0;
+  int after_cb_count = 0;
+  uv_work_t req;
+} work_t;
 
 static void work_cb(uv_work_t* req) {
-  ASSERT(req == &work_req);
-  ASSERT(req->data == &data);
-  work_cb_count++;
+  work_t* work = static_cast<work_t*>(req->data);
+  work->cb_count++;
 }
 
-
 static void after_work_cb(uv_work_t* req, int status) {
+  work_t* work = static_cast<work_t*>(req->data);
   ASSERT(status == 0);
-  ASSERT(req == &work_req);
-  ASSERT(req->data == &data);
-  after_work_cb_count++;
+  work->after_cb_count++;
 }
 
 int main(int argc, char *argv[]) {
   int r;
 
-  work_req.data = &data;
-  r = uv_queue_work(uv_default_loop(), &work_req, work_cb, after_work_cb);
-  ASSERT(r == 0);
-  uv_run(uv_default_loop(), UV_RUN_DEFAULT);
+  uv_loop_t* loop = uv_default_loop();
+  work_t work;
+  work.req.data = &work;
 
-  ASSERT(work_cb_count == 1);
-  ASSERT(after_work_cb_count == 1);
+  r = uv_queue_work(loop, &work.req, work_cb, after_work_cb);
+  ASSERT(r == 0);
+
+  uv_run(loop, UV_RUN_DEFAULT);
+
+  ASSERT(work.cb_count == 1);
+  ASSERT(work.after_cb_count == 1);
 
   return 0;
 }

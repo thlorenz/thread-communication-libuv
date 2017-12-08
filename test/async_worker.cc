@@ -7,16 +7,16 @@ uint64_t START_TIME = uv_hrtime() / 1E6;
 
 typedef void (*done_cb_t)(int* result, int status);
 
-class FileStreamAsyncWorker : public AsyncWorkerBase<int, char> {
+class FileStreamAsyncWorker : public AsyncWorkerBase<int, const char> {
   public:
     FileStreamAsyncWorker(
         uv_loop_t* loop,
-        char& input,
+        const char& input,
         done_cb_t done_cb = noop
       ) : AsyncWorkerBase(loop, input), done_cb_(done_cb) {}
 
   private:
-    int* onwork(char& file) {
+    int* onwork(const char& file) {
       log("onwork start");
       int* chunks = count_chunks(file, CHUNK_SIZE);
       log("onwork end");
@@ -40,7 +40,7 @@ static void onfinalDone(int* result, int status) {
 
 int main(int argc, char *argv[]) {
   uv_loop_t* loop = uv_default_loop();
-  char& file = *argv[0];
+  const char& file = *argv[0];
 
   // supplying onfinalDone is optional and demonstrates the ability to
   // handle the result inside the async worker classes or outside

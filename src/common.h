@@ -52,7 +52,7 @@ void inline uv_sleep(int msec) {
             msg);                                     \
   } while (0)
 
-inline int* count_chunks(char& file, size_t chunkSize) {
+inline int* count_chunks(const char& file, size_t chunkSize) {
   std::ifstream stream(&file);
 
   int* chunks = new int(0);

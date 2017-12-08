@@ -5,6 +5,12 @@
 #include <unistd.h>
 #include <uv.h>
 
+#include <vector>
+#include <iostream>
+#include <fstream>
+
+extern uint64_t START_TIME;
+
 /* assert lifted from libuv itself */
 #define ASSERT(expr)                                      \
  do {                                                     \
@@ -34,17 +40,30 @@ void inline uv_sleep(int msec) {
     ? __builtin_strrchr(__FILE__, '/') + 1 \
     : __FILE__)
 
-#define log(msg)                                  \
-  do {                                            \
-    double uptime;                                \
-    uv_uptime(&uptime);                           \
-    fprintf(stderr,                               \
-            "[%f](%s:%d)[0x%lx] %s\n",            \
-            uptime,                               \
-            __FILENAME__,                         \
-            __LINE__,                             \
-            (unsigned long int) uv_thread_self(), \
-            msg);                                 \
+#define log(msg)                                      \
+  do {                                                \
+    uint64_t time = (uv_hrtime() / 1E6) - START_TIME; \
+    fprintf(stderr,                                   \
+            "[%05lld](%s:%d)[0x%lx] %s\n",            \
+            time,                                     \
+            __FILENAME__,                             \
+            __LINE__,                                 \
+            (unsigned long int) uv_thread_self(),     \
+            msg);                                     \
   } while (0)
 
-#endif 
+inline int* count_chunks(char& file, size_t chunkSize) {
+  std::ifstream stream(&file);
+
+  int* chunks = new int(0);
+  do {
+    std::vector<char> buffer (chunkSize, 0);
+    stream.read(buffer.data(), buffer.size());
+    usleep(1E5);
+    (*chunks)++;
+    log("processed chunk");
+  } while(!stream.eof());
+  return chunks;
+}
+
+#endif

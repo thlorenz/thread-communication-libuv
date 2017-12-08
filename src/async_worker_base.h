@@ -7,25 +7,28 @@
 template <typename T, typename U>
 class AsyncWorkerBase {
   public:
-    AsyncWorkerBase(uv_loop_t& loop, U& input);
+    AsyncWorkerBase(uv_loop_t* loop, U& input);
+
+    int work();
 
     // called on worker thread
     virtual T* onwork(U& input) = 0;
 
     // called on loop thread
-    virtual void ondone(T* result) = 0;
-
-    typedef struct {
-      T* result;
-      U& input;
-      uv_work_t req;
-    } work_t;
+    virtual void ondone(T* result, int status) = 0;
 
   private:
-    void work_cb_(uv_work_t* req);
-    void after_work_cb_(uv_work_t* req, int status);
+    typedef struct {
+      T* result;
+      U* input;
+      uv_work_t req;
+      AsyncWorkerBase* self;
+    } work_t;
 
-    uv_loop_t& loop_;
+    static void work_cb_(uv_work_t* req);
+    static void after_work_cb_(uv_work_t* req, int status);
+
+    uv_loop_t* loop_;
     work_t work_;
 };
 

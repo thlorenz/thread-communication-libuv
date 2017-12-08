@@ -1,6 +1,8 @@
 #include "common.h"
 #include <uv.h>
 
+uint64_t START_TIME = uv_hrtime() / 1E6;
+
 typedef struct {
   int cb_count = 0;
   int after_cb_count = 0;
@@ -12,7 +14,7 @@ static void work_cb(uv_work_t* req) {
   work->cb_count++;
 
   log("Starting queued background work");
-  uv_sleep(1000);
+  uv_sleep(200);
   log("Finishing queued background work");
 }
 

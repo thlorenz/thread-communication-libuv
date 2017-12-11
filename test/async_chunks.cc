@@ -3,7 +3,7 @@
 #include <uv.h>
 
 uint64_t START_TIME = uv_hrtime() / 1E6;
-#define CHUNK_SIZE 128000
+#define CHUNK_SIZE 64000
 
 typedef struct {
   std::istream& stream;
@@ -43,6 +43,8 @@ class ChunkProcessor : public AsyncWorkerBase<int, loop_work_t> {
         uv_mutex_unlock(&work.mutex);
         log("}");
         if (chunkToProcess) (*chunks)++;
+        // pretend we need time to process this
+        uv_sleep(1E2);
       } while(!done);
 
       log("onwork end work");
@@ -52,7 +54,7 @@ class ChunkProcessor : public AsyncWorkerBase<int, loop_work_t> {
     void ondone(int* result, int status) {
       ASSERT(status == 0);
       log("ondone");
-      fprintf(stderr, "read %d chunks\n", *result);
+      fprintf(stderr, "processed %d chunks\n", *result);
     }
 };
 

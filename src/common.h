@@ -66,4 +66,9 @@ inline int* count_chunks(const char& file, size_t chunkSize) {
   return chunks;
 }
 
+inline char* copy_buffer(const char* buffer, size_t size) {
+  char* cpy = new char[size];
+  strncpy(cpy, buffer, size);
+  return cpy;
+}
 #endif

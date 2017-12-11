@@ -45,6 +45,19 @@ $(ASYNC_WORKER): $(UV_LIB) $(OBJS) $(ASYNC_WORKER_OBJS)
 	$(CXX) $(LIBS) $(ASYNC_WORKER_OBJS) $(OBJS) $(UV_LIB) -o $@
 
 async_worker: $(ASYNC_WORKER)
+
+# async_chunks: worker API using queueing under the hood, sending providing work in chunks
+
+ASYNC_CHUNKS = $(BIN_DIR)/async_chunks
+ASYNC_CHUNKS_SRCS=$(TST_DIR)/async_chunks.cc
+ASYNC_CHUNKS_OBJS=$(ASYNC_CHUNKS_SRCS:.cc=.o)
+
+$(ASYNC_CHUNKS): $(UV_LIB) $(OBJS) $(ASYNC_CHUNKS_OBJS)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(LIBS) $(ASYNC_CHUNKS_OBJS) $(OBJS) $(UV_LIB) -o $@
+
+async_chunks: $(ASYNC_CHUNKS)
+
 .SUFFIXES: .cc .o
 .cc.o:
 	$(CXX) $< $(CCFLAGS) $(INCS) -c -o $@

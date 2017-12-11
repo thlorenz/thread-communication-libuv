@@ -4,12 +4,17 @@
 
 uint64_t START_TIME = uv_hrtime() / 1E6;
 #define CHUNK_SIZE 64000
+#define SLEEP_TIME 40
+
+typedef struct { 
+  const char* data;
+  size_t size;
+} chunk_t;
 
 typedef struct {
   std::istream& stream;
   size_t chunkSize;
-  const char* chunk;
-  bool chunkToProcess;
+  std::vector<chunk_t*> chunks;
   bool done;
   uv_mutex_t mutex;
 } loop_work_t;
@@ -27,15 +32,17 @@ class ChunkProcessor : public AsyncWorkerBase<int, loop_work_t> {
       int* chunks = new int(0);
       bool done;
       bool chunkToProcess;
+      chunk_t* chunk;
       do {
         uv_mutex_lock(&work.mutex);
         {
           log("processor {");
           done = work.done;
-          chunkToProcess = work.chunkToProcess;
-          work.chunkToProcess = false;
+          chunkToProcess = work.chunks.size() > 0;
           if (chunkToProcess) { 
             log("  will process new chunk");
+            chunk = work.chunks.front();
+            work.chunks.erase(work.chunks.begin());
           } else {
             log("  no chunk to process");
           }
@@ -44,8 +51,8 @@ class ChunkProcessor : public AsyncWorkerBase<int, loop_work_t> {
         log("}");
         if (chunkToProcess) (*chunks)++;
         // pretend we need time to process this
-        uv_sleep(1E2);
-      } while(!done);
+        uv_sleep(SLEEP_TIME);
+      } while(!done || chunkToProcess);
 
       log("onwork end work");
       return chunks;
@@ -66,8 +73,8 @@ static void onloopIteration(uv_idle_t* handle) {
     log("loop {");
     std::vector<char> buffer(loop_work->chunkSize, 0);
     loop_work->stream.read(buffer.data(), buffer.size());
-    loop_work->chunk = copy_buffer(buffer.data(), buffer.size());
-    loop_work->chunkToProcess = true;
+    chunk_t* chunk = new chunk_t({ .data = buffer.data(), .size = buffer.size() });
+    loop_work->chunks.emplace_back(chunk);
 
     log(" added chunk, waiting to process");
 
@@ -75,12 +82,13 @@ static void onloopIteration(uv_idle_t* handle) {
       log(" reached end of stream, stopping");
       loop_work->done = true;
       uv_idle_stop(handle);
-    } else {
-
     }
   }
   uv_mutex_unlock(&loop_work->mutex);
   log("}");
+
+  // producing chunks twice as fast as they are processed
+  uv_sleep(SLEEP_TIME / 2);
 }
 
 int main(int argc, char *argv[]) {
@@ -97,7 +105,6 @@ int main(int argc, char *argv[]) {
   loop_work_t loop_work = {
     .stream = stream,
     .chunkSize = CHUNK_SIZE,
-    .chunkToProcess = true,
     .done = false
   };
 

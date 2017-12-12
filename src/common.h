@@ -2,6 +2,7 @@
 #define SRC_COMMON_H
 
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <uv.h>
 

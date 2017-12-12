@@ -3,7 +3,7 @@ DEPS        = $(ROOT)/deps
 
 -include libuv.mk
 
-CCFLAGS = $(UV_FLAGS) -std=c++11 -g
+CCFLAGS = $(UV_FLAGS) -Wno-format -std=c++11 -g
 
 SRC_DIR = $(ROOT)/src
 TST_DIR = $(ROOT)/test

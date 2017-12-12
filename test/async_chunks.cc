@@ -42,8 +42,8 @@ class ChunkProcessor : public AsyncWorkerBase<work_result_t, loop_work_t> {
 
       bool done;
       bool chunkToProcess;
+      chunk_t* chunk;
       do {
-        chunk_t chunkcpy;
         uv_mutex_lock(&work.mutex);
         {
           log("processor reading {");
@@ -51,8 +51,7 @@ class ChunkProcessor : public AsyncWorkerBase<work_result_t, loop_work_t> {
           chunkToProcess = work.chunks.size() > 0;
           if (chunkToProcess) {
             log("  will process new chunk");
-            chunk_t* chunk = work.chunks.front();
-            chunkcpy = { .data = chunk->data, .size = chunk->size };
+            chunk = work.chunks.front();
             work.chunks.erase(work.chunks.begin());
           } else {
             log("  no chunk to process");
@@ -63,11 +62,13 @@ class ChunkProcessor : public AsyncWorkerBase<work_result_t, loop_work_t> {
 
         if (chunkToProcess) {
           result->chunksProcessed++;
-          result->charCount += count_char(chunkcpy.data, chunkcpy.size, charToCount_);
+          result->charCount += count_char(chunk->data, chunk->size, charToCount_);
+
+          delete[] chunk->data;
+          delete chunk;
 
           // pretend counting chars takes a lot longer
           uv_sleep(SLEEP_TIME);
-          delete [] chunkcpy.data;
         }
       } while(!done || chunkToProcess);
 
@@ -99,6 +100,7 @@ static void onloopIteration(uv_idle_t* handle) {
       .size = buffer.size()
     });
     loop_work->chunks.emplace_back(chunk);
+    chunk = nullptr;
 
     log(" added chunk, waiting to process");
 
@@ -147,4 +149,8 @@ int main(int argc, char *argv[]) {
 
   log("Starting loop");
   uv_run(loop, UV_RUN_DEFAULT);
+
+  uv_loop_close(loop);
+
+  return 0;
 }

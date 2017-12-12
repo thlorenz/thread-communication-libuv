@@ -42,5 +42,7 @@ int main(int argc, char *argv[]) {
   ASSERT(work.cb_count == 1);
   ASSERT(work.after_cb_count == 1);
 
+  uv_loop_close(loop);
+
   return 0;
 }

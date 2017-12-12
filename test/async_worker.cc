@@ -36,6 +36,7 @@ static void onfinalDone(int* result, int status) {
   ASSERT(status == 0);
   log("onfinalDone");
   fprintf(stderr, "read %d chunks\n", *result);
+  delete result;
 }
 
 int main(int argc, char *argv[]) {
@@ -50,4 +51,6 @@ int main(int argc, char *argv[]) {
 
   log("Starting loop");
   uv_run(loop, UV_RUN_DEFAULT);
+
+  uv_loop_close(loop);
 }

@@ -53,6 +53,12 @@ void inline uv_sleep(int msec) {
             msg);                                     \
   } while (0)
 
+inline char* copy_buffer(const char* buffer, size_t size) {
+  char* cpy = new char[size];
+  strncpy(cpy, buffer, size);
+  return cpy;
+}
+
 inline int* count_chunks(const char& file, size_t chunkSize) {
   std::ifstream stream(&file);
 

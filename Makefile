@@ -2,6 +2,7 @@ ROOT        = $(shell pwd)
 DEPS        = $(ROOT)/deps
 
 -include libuv.mk
+-include async-worker.mk
 
 CCFLAGS = $(UV_FLAGS) -Wno-format -std=c++11 -g
 
@@ -9,7 +10,7 @@ SRC_DIR = $(ROOT)/src
 TST_DIR = $(ROOT)/test
 BIN_DIR = $(ROOT)/bin
 
-INCS =-I$(UV_INCLUDES) -I$(SRC_DIR)
+INCS =-I$(UV_INCLUDES) -I$(ASYNC_WORKER_INCLUDES) -I$(SRC_DIR)
 
 xcode:
 	@mkdir -p build
@@ -38,7 +39,7 @@ ASYNC_WORKER = $(BIN_DIR)/async_worker
 ASYNC_WORKER_SRCS=$(TST_DIR)/async_worker.cc
 ASYNC_WORKER_OBJS=$(ASYNC_WORKER_SRCS:.cc=.o)
 
-$(ASYNC_WORKER): $(UV_LIB) $(ASYNC_WORKER_OBJS)
+$(ASYNC_WORKER): $(UV_LIB) $(ASYNC_WORKER_PATH) $(ASYNC_WORKER_OBJS)
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(LIBS) $(ASYNC_WORKER_OBJS) $(UV_LIB) -o $@
 
@@ -50,7 +51,7 @@ ASYNC_CHUNKS = $(BIN_DIR)/async_chunks
 ASYNC_CHUNKS_SRCS=$(TST_DIR)/async_chunks.cc
 ASYNC_CHUNKS_OBJS=$(ASYNC_CHUNKS_SRCS:.cc=.o)
 
-$(ASYNC_CHUNKS): $(UV_LIB) $(ASYNC_CHUNKS_OBJS)
+$(ASYNC_CHUNKS): $(UV_LIB) $(ASYNC_WORKER_PATH) $(ASYNC_CHUNKS_OBJS)
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(LIBS) $(ASYNC_CHUNKS_OBJS) $(UV_LIB) -o $@
 

@@ -1,4 +1,4 @@
-#include "async_worker_base.cc"
+#include "async_worker.h"
 #include "common.h"
 #include <uv.h>
 
@@ -24,13 +24,13 @@ typedef struct {
   int32_t chunksProcessed;
 } work_result_t;
 
-class ChunkProcessor : public AsyncWorkerBase<work_result_t, loop_work_t> {
+class ChunkProcessor : public AsyncWorker<work_result_t, loop_work_t> {
   public:
     ChunkProcessor(
         uv_loop_t* loop,
         loop_work_t& work,
         const char charToCount
-      ) : AsyncWorkerBase(loop, work), charToCount_(charToCount) {}
+      ) : AsyncWorker(loop, work), charToCount_(charToCount) {}
 
   private:
     work_result_t* onwork(loop_work_t& work) {

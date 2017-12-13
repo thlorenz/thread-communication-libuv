@@ -9,8 +9,6 @@ SRC_DIR = $(ROOT)/src
 TST_DIR = $(ROOT)/test
 BIN_DIR = $(ROOT)/bin
 
-SRCS := $(wildcard $(SRC_DIR)/*.cc)
-OBJS = $(SRCS:.cc=.o)
 INCS =-I$(UV_INCLUDES) -I$(SRC_DIR)
 
 xcode:
@@ -28,9 +26,9 @@ ASYNC_QUEUE = $(BIN_DIR)/async_queue
 ASYNC_QUEUE_SRCS=$(TST_DIR)/async_queue.cc
 ASYNC_QUEUE_OBJS=$(ASYNC_QUEUE_SRCS:.cc=.o)
 
-$(ASYNC_QUEUE): $(UV_LIB) $(OBJS) $(ASYNC_QUEUE_OBJS)
+$(ASYNC_QUEUE): $(UV_LIB) $(ASYNC_QUEUE_OBJS)
 	@mkdir -p $(BIN_DIR)
-	$(CXX) $(LIBS) $(OBJS) $(ASYNC_QUEUE_OBJS) $(UV_LIB) -o $@
+	$(CXX) $(LIBS) $(ASYNC_QUEUE_OBJS) $(UV_LIB) -o $@
 
 async_queue: $(ASYNC_QUEUE)
 
@@ -40,9 +38,9 @@ ASYNC_WORKER = $(BIN_DIR)/async_worker
 ASYNC_WORKER_SRCS=$(TST_DIR)/async_worker.cc
 ASYNC_WORKER_OBJS=$(ASYNC_WORKER_SRCS:.cc=.o)
 
-$(ASYNC_WORKER): $(UV_LIB) $(OBJS) $(ASYNC_WORKER_OBJS)
+$(ASYNC_WORKER): $(UV_LIB) $(ASYNC_WORKER_OBJS)
 	@mkdir -p $(BIN_DIR)
-	$(CXX) $(LIBS) $(ASYNC_WORKER_OBJS) $(OBJS) $(UV_LIB) -o $@
+	$(CXX) $(LIBS) $(ASYNC_WORKER_OBJS) $(UV_LIB) -o $@
 
 async_worker: $(ASYNC_WORKER)
 
@@ -52,9 +50,9 @@ ASYNC_CHUNKS = $(BIN_DIR)/async_chunks
 ASYNC_CHUNKS_SRCS=$(TST_DIR)/async_chunks.cc
 ASYNC_CHUNKS_OBJS=$(ASYNC_CHUNKS_SRCS:.cc=.o)
 
-$(ASYNC_CHUNKS): $(UV_LIB) $(OBJS) $(ASYNC_CHUNKS_OBJS)
+$(ASYNC_CHUNKS): $(UV_LIB) $(ASYNC_CHUNKS_OBJS)
 	@mkdir -p $(BIN_DIR)
-	$(CXX) $(LIBS) $(ASYNC_CHUNKS_OBJS) $(OBJS) $(UV_LIB) -o $@
+	$(CXX) $(LIBS) $(ASYNC_CHUNKS_OBJS) $(UV_LIB) -o $@
 
 async_chunks: $(ASYNC_CHUNKS)
 
@@ -63,8 +61,8 @@ async_chunks: $(ASYNC_CHUNKS)
 	$(CXX) $< $(CCFLAGS) $(INCS) -c -o $@
 
 clean:
-	@rm -f $(OBJS)                         \
-		$(ASYNC_QUEUE) $(ASYNC_QUEUE_OBJS) \
-		$(ASYNC_WORKER) $(ASYNC_WORKER_OBJS)
+	@rm -f $(ASYNC_QUEUE) $(ASYNC_QUEUE_OBJS) \
+		$(ASYNC_WORKER) $(ASYNC_WORKER_OBJS) \
+		$(ASYNC_CHUNKS) $(ASYNC_CHUNKS_OBJS)
 
 .PHONY: async_queue xcode

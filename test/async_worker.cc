@@ -1,4 +1,4 @@
-#include "async_worker_base.cc"
+#include "async_worker.h"
 #include "common.h"
 #include <uv.h>
 
@@ -7,13 +7,13 @@ uint64_t START_TIME = uv_hrtime() / 1E6;
 
 typedef void (*done_cb_t)(int* result, int status);
 
-class FileStreamAsyncWorker : public AsyncWorkerBase<int, const char> {
+class FileStreamAsyncWorker : public AsyncWorker<int, const char> {
   public:
     FileStreamAsyncWorker(
         uv_loop_t* loop,
         const char& input,
         done_cb_t done_cb = noop
-      ) : AsyncWorkerBase(loop, input), done_cb_(done_cb) {}
+      ) : AsyncWorker(loop, input), done_cb_(done_cb) {}
 
   private:
     int* onwork(const char& file) {
